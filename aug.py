@@ -4,22 +4,13 @@ import imgaug.augmenters as iaa
 import cv2
 import os
 
-ia.seed(1)
-
-
-# images = np.array(
-#     [ia.quokka(size=(64, 64)) for _ in range(32)],
-#     dtype=np.uint8
-# )
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-img_path = BASE_DIR +"\license1.png"
+img_path = BASE_DIR +"/imgsrc/sample.jpg"
 
 print("load image " + img_path)
 
 # load images GRAYSCALE
 img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-
 
 sometimes = lambda aug : iaa.Sometimes(0.5, aug)
 
@@ -30,7 +21,6 @@ sev_rain = 0
 # suppose that angle of cctv is 10 to -10 degree 
 seq = iaa.Sequential(
     [
-        iaa.Fliplr(0.5),
         sometimes(iaa.Affine(
             scale={"x" : (0.95, 1.15), "y" : (0.95,1.15)},
             translate_percent={"x": (-0.15, 0.15), "y" : (-0.15, 0.15)},
@@ -90,11 +80,11 @@ seq = iaa.Sequential(
     ]
 )
 
-images_aug = seq(images=img)
+for i in range(5):
+    ia.seed(i)
+    images_aug = seq(images=img)
+    cv2.imwrite(BASE_DIR+'/imgaug/aug_license{}.png'.format(i), images_aug)
 
-# cv2.imwrite('aug_license1.png', images_aug)
-cv2.imshow('gray', images_aug)
-cv2.imwrite('aug_license1.png', img)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
